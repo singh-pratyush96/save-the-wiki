@@ -9,7 +9,7 @@ from urllib import request
 
 import requests
 
-usage = 'savethewiki [-q =False] [-n =10] <Number of Search Results> [-r =False] [-s] <Search Query>'
+usage = 'Usage : savethewiki [-q =False] [-n =10] <Number of Search Results> [-r =False] [-s] <Search Query> [-p] <page name>'
 
 SILENT_MODE = False
 NUMBER_OF_SEARCH_RESULTS = 10
@@ -38,7 +38,7 @@ def process_arguments(level, argv):
         options, args = getopt(argv, "qn:rs:p:",
                                ['--quiet', 'number-search=', 'regex-mode', 'search-parameter=', '--page-name'])
     except GetoptError as err:
-        smart_print(level, err)
+        print(err)
         smart_print(level, usage)
         sys.exit()
 
@@ -104,7 +104,7 @@ def download_file(level, src, dst):
     global remaining
     smart_print(level, 'Downloading file ' + src + ' to ' + dst)
     request.urlretrieve(src, dst)
-    smart_print(level, 'Downloaded ' + dst )
+    smart_print(level, 'Downloaded ' + dst)
 
 
 def download_page(level, pagename):
@@ -143,7 +143,7 @@ def download_page(level, pagename):
         file_name = str(count) + '.' + img.split('/')[-1].split('.')[-1]
         file_name_full = prefix + '/' + file_name
         file_url = 'https:' + img
-        download_file(level+1, file_url, file_name_full)
+        download_file(level + 1, file_url, file_name_full)
         html_content = html_content.replace(img, os.getcwd() + '/' + file_name_full)
         count += 1
 
