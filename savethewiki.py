@@ -8,7 +8,7 @@ from urllib import request
 
 import requests
 
-usage = 'Usage : savethewiki [-q =False] [-n =10] <Number of Search Results> [-r =False] [-s] <Search Query> [-p] <page name>'
+usage = 'Usage : savethewiki [-q =False] [-n =10] <Number of Search Results> [-r =False] [-s] <Search Query> [-p] <page name> [-t]'
 
 SILENT_MODE = False
 NUMBER_OF_SEARCH_RESULTS = 10
@@ -18,7 +18,7 @@ SEARCH_PARAMETER = ''
 INPUT_SEARCH = True
 DIRECT_SEARCH = False
 URL = ''
-remaining = 0
+TEXT_ONLY = False
 
 
 def smart_print(level, msg):
@@ -31,11 +31,12 @@ def smart_print(level, msg):
 
 
 def process_arguments(level, argv):
-    global SILENT_MODE, NUMBER_OF_SEARCH_RESULTS, LANGUAGE, REGEX, SEARCH_PARAMETER, INPUT_SEARCH, DIRECT_SEARCH, URL
+    global SILENT_MODE, NUMBER_OF_SEARCH_RESULTS, LANGUAGE, REGEX, SEARCH_PARAMETER, INPUT_SEARCH, DIRECT_SEARCH, URL, TEXT_ONLY
 
     try:
-        options, args = getopt(argv, "qn:rs:p:",
-                               ['--quiet', 'number-search=', 'regex-mode', 'search-parameter=', '--page-name'])
+        options, args = getopt(argv, "qn:rs:p:t",
+                               ['--quiet', 'number-search=', 'regex-mode', 'search-parameter=', 'page-name',
+                                'text-only'])
     except GetoptError as err:
         print(err)
         smart_print(level, usage)
@@ -55,11 +56,12 @@ def process_arguments(level, argv):
             SEARCH_PARAMETER = arg
             DIRECT_SEARCH = True
             INPUT_SEARCH = False
+        elif opt in ('-t', '--page-only'):
+            TEXT_ONLY = True
 
-    if SILENT_MODE and INPUT_SEARCH :
+    if SILENT_MODE and INPUT_SEARCH:
         print('Can\'t take user input in quiet mode.')
         sys.exit()
-
 
     URL = 'https://' + LANGUAGE + '.wikipedia.org/w/api.php'
 
@@ -127,9 +129,6 @@ def download_page(level, pagename):
         smart_print(level + 1, 'Error fetching data.')
         return
 
-    if not os.path.exists('stwdata'):
-        os.mkdir('stwdata')
-
     prefix = 'stwdata/' + pagename
 
     html_content = parsed_json['parse']['text']['*']
@@ -140,17 +139,22 @@ def download_page(level, pagename):
 
     imgs = re.findall('src="([^"]+)"', html_content)
 
-    if not os.path.exists(prefix):
-        os.mkdir(prefix)
+    if TEXT_ONLY:
+        html_content = re.sub('<img\s[^>]*?src\s*=\s*[\'\"]([^\'\"]*?)[\'\"][^>]*?>', '', html_content)
+    else:
+        if not os.path.exists('stwdata'):
+            os.mkdir('stwdata')
 
-    count = 0
-    for img in imgs:
-        file_name = str(count) + '.' + img.split('/')[-1].split('.')[-1]
-        file_name_full = prefix + '/' + file_name
-        file_url = 'https:' + img
-        download_file(level + 1, file_url, file_name_full)
-        html_content = html_content.replace(img, os.getcwd() + '/' + file_name_full)
-        count += 1
+        if not os.path.exists(prefix):
+            os.mkdir(prefix)
+        count = 0
+        for img in imgs:
+            file_name = str(count) + '.' + img.split('/')[-1].split('.')[-1]
+            file_name_full = prefix + '/' + file_name
+            file_url = 'https:' + img
+            download_file(level + 1, file_url, file_name_full)
+            html_content = html_content.replace(img, os.getcwd() + '/' + file_name_full)
+            count += 1
 
     fo = open(pagename + '.html', "w")
     fo.write(html_content)
