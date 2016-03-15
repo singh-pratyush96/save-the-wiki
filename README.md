@@ -39,3 +39,6 @@ Saved Wikipedia pages of `Call of Duty`, `Call of Duty 4: Modern Warfare`, `Call
   *   Search Querry
 * `-p` or `--page-name`
   *   Page name as on Wikipedia
+* `-t` or `--text-only`
+  *   Text only mode, no images saved
+  *   Default `not set`
