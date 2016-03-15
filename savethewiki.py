@@ -3,7 +3,6 @@ import json
 import os
 import re
 import sys
-import threading
 from getopt import getopt, GetoptError
 from urllib import request
 
@@ -55,6 +54,12 @@ def process_arguments(level, argv):
         elif opt in ('-p', '--page-name'):
             SEARCH_PARAMETER = arg
             DIRECT_SEARCH = True
+            INPUT_SEARCH = False
+
+    if SILENT_MODE and INPUT_SEARCH :
+        print('Can\'t take user input in quiet mode.')
+        sys.exit()
+
 
     URL = 'https://' + LANGUAGE + '.wikipedia.org/w/api.php'
 
