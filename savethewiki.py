@@ -5,6 +5,8 @@ import re
 import sys
 from getopt import getopt, GetoptError
 from urllib import request
+import bs4
+
 
 import requests
 
@@ -137,11 +139,14 @@ def download_page(level, pagename):
         .replace('href=\"//', 'href=\"https://') \
         .replace('href=\"/', 'href=\"https://en.wikipedia.org/')
 
-    imgs = re.findall('src="([^"]+)"', html_content)
 
     if TEXT_ONLY:
         html_content = re.sub('<img\s[^>]*?src\s*=\s*[\'\"]([^\'\"]*?)[\'\"][^>]*?>', '', html_content)
     else:
+        soup = bs4.BeautifulSoup(html_content)
+        imgs = [image["src"] for image in soup.findAll("img")]
+        print(imgs)
+
         if not os.path.exists('stwdata'):
             os.mkdir('stwdata')
 
@@ -149,7 +154,7 @@ def download_page(level, pagename):
             os.mkdir(prefix)
         count = 0
         for img in imgs:
-            file_name = str(count) + '.' + img.split('/')[-1].split('.')[-1]
+            file_name = str(count) + '.' + img.split('.')[-1]
             file_name_full = prefix + '/' + file_name
             file_url = 'https:' + img
             download_file(level + 1, file_url, file_name_full)
