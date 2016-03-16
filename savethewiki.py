@@ -7,7 +7,6 @@ from getopt import getopt, GetoptError
 from urllib import request
 import bs4
 
-
 import requests
 
 usage = 'Usage : savethewiki [-q =False] [-n =10] <Number of Search Results> [-r =False] [-s] <Search Query> [-p] <page name> [-t]'
@@ -22,6 +21,9 @@ DIRECT_SEARCH = False
 URL = ''
 TEXT_ONLY = False
 
+pre_page = '<html><body bgcolor="#00112f"><div style="background-color: white; color: black; margin-left: 50px;' \
+           ' padding: 20px; margin-right: 50px;margin-top: 20px;">'
+pos_page = '</div></body></html>'
 
 def smart_print(level, msg):
     if not SILENT_MODE:
@@ -137,15 +139,16 @@ def download_page(level, pagename):
 
     html_content = html_content \
         .replace('href=\"//', 'href=\"https://') \
-        .replace('href=\"/', 'href=\"https://en.wikipedia.org/')
+        .replace('href=\"/', 'href=\"https://en.wikipedia.org/') \
+        .replace('<table ', '<table align=\"center\" ')
 
+    html_content = pre_page + html_content + pos_page
 
     if TEXT_ONLY:
         html_content = re.sub('<img\s[^>]*?src\s*=\s*[\'\"]([^\'\"]*?)[\'\"][^>]*?>', '', html_content)
     else:
         soup = bs4.BeautifulSoup(html_content)
         imgs = [image["src"] for image in soup.findAll("img")]
-        print(imgs)
 
         if not os.path.exists('stwdata'):
             os.mkdir('stwdata')
