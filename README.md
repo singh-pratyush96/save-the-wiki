@@ -42,6 +42,9 @@ Saved Wikipedia pages of `Call of Duty`, `Call of Duty 4: Modern Warfare`, `Call
 * `-t` or `--text-only`
   *   Text only mode, no images saved
   *   Default `not set`
+* `-l` or `--language`
+  *   Set language for page
+  *   Default `en` (English)
 
 
 ### Requirements

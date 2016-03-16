@@ -5,8 +5,8 @@ import re
 import sys
 from getopt import getopt, GetoptError
 from urllib import request
-import bs4
 
+import bs4
 import requests
 
 usage = 'Usage : savethewiki [-q =False] [-n =10] <Number of Search Results> [-r =False] [-s] <Search Query> [-p] <page name> [-t]'
@@ -25,6 +25,7 @@ pre_page = '<html><body bgcolor="#00112f"><div style="background-color: white; c
            ' padding: 20px; margin-right: 50px;margin-top: 20px;">'
 pos_page = '</div></body></html>'
 
+
 def smart_print(level, msg):
     if not SILENT_MODE:
         tabs = ''
@@ -35,12 +36,13 @@ def smart_print(level, msg):
 
 
 def process_arguments(level, argv):
-    global SILENT_MODE, NUMBER_OF_SEARCH_RESULTS, LANGUAGE, REGEX, SEARCH_PARAMETER, INPUT_SEARCH, DIRECT_SEARCH, URL, TEXT_ONLY
+    global SILENT_MODE, NUMBER_OF_SEARCH_RESULTS, LANGUAGE, REGEX, SEARCH_PARAMETER, INPUT_SEARCH, DIRECT_SEARCH, URL, \
+        TEXT_ONLY
 
     try:
-        options, args = getopt(argv, "qn:rs:p:t",
+        options, args = getopt(argv, "qn:rs:p:tl:",
                                ['--quiet', 'number-search=', 'regex-mode', 'search-parameter=', 'page-name',
-                                'text-only'])
+                                'text-only', 'language='])
     except GetoptError as err:
         print(err)
         smart_print(level, usage)
@@ -62,6 +64,8 @@ def process_arguments(level, argv):
             INPUT_SEARCH = False
         elif opt in ('-t', '--page-only'):
             TEXT_ONLY = True
+        elif opt in ('-l', ('--language')):
+            LANGUAGE = arg
 
     if SILENT_MODE and INPUT_SEARCH:
         print('Can\'t take user input in quiet mode.')
