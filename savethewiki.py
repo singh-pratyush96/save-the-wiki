@@ -116,10 +116,11 @@ def normal(level):
 
 
 def download_file(level, src, dst):
-    global remaining
-    smart_print(level, 'Downloading file ' + src + ' to ' + dst)
+    if len(src) > 45:
+        src_print = '...' + src[-42:]
+    smart_print(level, 'Downloading file ' + src_print + ' to ' + dst)
     request.urlretrieve(src, dst)
-    smart_print(level, 'Downloaded ' + dst)
+    smart_print(level, 'Downloaded ' + dst + '\n')
 
 
 def download_page(level, pagename):
@@ -129,7 +130,7 @@ def download_page(level, pagename):
         'format': 'json'
     }
 
-    smart_print(level, 'Requesting data for page ' + pagename.replace('_', ' '))
+    smart_print(level, '\n\nRequesting data for page ' + pagename.replace('_', ' '))
     response = requests.get(URL, params=params_to_put);
 
     parsed_json = json.loads(response.text)
