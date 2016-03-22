@@ -49,4 +49,10 @@ Saved Wikipedia pages of `Call of Duty`, `Call of Duty 4: Modern Warfare`, `Call
 
 ### Requirements
 
-* `BeautifulSoup4`
+```
+pip install -r requirements.txt
+```
+
+* BeautifulSoup4
+* requests
+* docopt
