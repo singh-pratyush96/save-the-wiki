@@ -21,7 +21,8 @@ DIRECT_SEARCH = False
 URL = ''
 TEXT_ONLY = False
 
-pre_page = '<html><body bgcolor="#00112f"><div style="background-color: white; color: black; margin-left: 50px;' \
+pre_page = '<html><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />' \
+           '<body bgcolor="#00112f"><div style="background-color: white; color: black; margin-left: 50px;' \
            ' padding: 20px; margin-right: 50px;margin-top: 20px;">'
 pos_page = '</div></body></html>'
 
@@ -152,7 +153,7 @@ def download_page(level, pagename):
     if TEXT_ONLY:
         html_content = re.sub('<img\s[^>]*?src\s*=\s*[\'\"]([^\'\"]*?)[\'\"][^>]*?>', '', html_content)
     else:
-        soup = bs4.BeautifulSoup(html_content)
+        soup = bs4.BeautifulSoup(html_content, 'lxml')
         imgs = [image["src"] for image in soup.findAll("img")]
 
         if not os.path.exists('stwdata'):
@@ -169,7 +170,7 @@ def download_page(level, pagename):
             html_content = html_content.replace(img, os.getcwd() + '/' + file_name_full)
             count += 1
 
-    fo = open(pagename + '.html', "w")
+    fo = open(pagename + '.html', "w", encoding='utf-8')
     fo.write(html_content)
     fo.close()
 
